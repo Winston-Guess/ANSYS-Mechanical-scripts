@@ -1,0 +1,44 @@
+OUTRES,all,all
+!
+*do,iter,1,120
+!
+/SOLU
+/inp,'D:\Ansys Sims\Research_Paper_FSI\Files\initial-stress-ist.dat'          ! Read in Node Based IST Data
+esel,all
+inis,list
+SOLVE
+finish
+/POST1
+!resume here exits run
+alls     				!this selects everything, good place to start
+!
+set,last
+!
+*get,mxnid,node,,num,max		!Get max node id
+nsel,s,node,,mxnid			!Select new-set(s) last node
+prnsol,s,comp				!Print x,y,z,xy,yz,xz component stresses of last node
+nsel,all,all				!select all nodes
+*dim,nl,array,mxnid			!array for containing NODE ID
+*dim,sx,array,mxnid			!array for containing NODE ID
+*dim,sy,array,mxnid			!array for containing NODE ID
+*dim,sz,array,mxnid			!array for containing NODE ID
+*dim,sxy,array,mxnid			!array for containing NODE ID
+*dim,syz,array,mxnid			!array for containing NODE ID
+*dim,sxz,array,mxnid			!array for containing NODE ID
+!
+*vget,nl,node,,nlist			!Returns the list of selected nodes
+*vget,sx,node,,s,x			!Returns component stresses
+*vget,sy,node,,s,y
+*vget,sz,node,,s,z
+*vget,sxy,node,,s,xy			
+*vget,syz,node,,s,yz
+*vget,sxz,node,,s,xz
+*cfopen,'D:\Ansys Sims\Research_Paper_FSI\Files\initial-stress-ist.dat'       ! Generate Ist File
+*vwrite
+('INIS,SET,NODE,1')			!Enable node-based initial state. When Val2 = 1, all subsequent INISTATE commands use the node-based format
+*vwrite,nl(1),sx(1),sy(1),sz(1),sxy(1),syz(1),sxz(1)
+('INIS,DEFI,',F6.0,' , , , , ',E,' , ',E,' , ',E,' , ',E,' , ',E,' , ',E)
+*cfclos
+!
+*enddo
+/SOLU
